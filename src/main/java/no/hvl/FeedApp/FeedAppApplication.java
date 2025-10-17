@@ -1,4 +1,4 @@
-package com.example.FeedApp;
+package no.hvl.FeedApp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
