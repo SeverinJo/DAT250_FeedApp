@@ -1,11 +1,38 @@
-HELP.md
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+# --- OS / IDE ---
+.DS_Store
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+out/
 
-### STS ###
+# --- Gradle (root + backend) ---
+.gradle/
+backend/.gradle/
+backend/build/
+# behold Gradle wrapper i repo
+!gradle/wrapper/gradle-wrapper.jar
+
+# --- Java / misc ---
+bin/
+HELP.md
+
+# --- Frontend (Vite/Node) ---
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+# miljøfiler (ikke sjekk inn hemmeligheter)
+frontend/.env
+frontend/.env.*
+!.env.example
+
+# --- NetBeans / STS (hvis aktuelt) ---
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 .apt_generated
 .classpath
 .factorypath
@@ -13,25 +40,7 @@ build/
 .settings
 .springBeans
 .sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
+# --- Kjapp fallback: bygg-artefakter hvor som helst ---
+**/build/
+!**/src/**/build/
