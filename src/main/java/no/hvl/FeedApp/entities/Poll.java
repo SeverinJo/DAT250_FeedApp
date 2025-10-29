@@ -30,14 +30,14 @@ public class Poll {
         this.question = question;
     }
 
-    public VoteOption addVoteOption(String caption) {
-        VoteOption voteOption = new VoteOption();
-        voteOption.setCaption(caption);
-        voteOption.setPoll(this);
-        voteOption.setPresentationOrder(options.size());
-        this.options.add(voteOption);
-        return voteOption;
-    }
+//    public VoteOption addVoteOption(String caption) {
+//        VoteOption voteOption = new VoteOption();
+//        voteOption.setCaption(caption);
+//        voteOption.setPoll(this);
+//        voteOption.setPresentationOrder(options.size());
+//        this.options.add(voteOption);
+//        return voteOption;
+//    }
 
     public Long getId() {
         return id;

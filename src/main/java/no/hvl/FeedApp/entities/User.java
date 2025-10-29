@@ -27,23 +27,23 @@ public class User {
         this.email = email;
         this.created = new LinkedHashSet<>();
     }
-
-    public Poll createPoll(String question) {
-        Poll poll = new Poll(question);
-        poll.setCreatedBy(this);
-        poll.setPublishedAt(Instant.now());
-        poll.setValidUntil(Instant.parse("2025-12-31T23:59:59.00Z"));
-        this.created.add(poll);
-        return poll;
-    }
-
-    public Vote voteFor(VoteOption option) {
-        Vote vote = new Vote();
-        vote.setPublishedAt(Instant.now());
-        vote.setVoter(this);
-        vote.setOption(option);
-        return vote;
-    }
+//
+//    public Poll createPoll(String question) {
+//        Poll poll = new Poll(question);
+//        poll.setCreatedBy(this);
+//        poll.setPublishedAt(Instant.now());
+//        poll.setValidUntil(Instant.parse("2025-12-31T23:59:59.00Z"));
+//        this.created.add(poll);
+//        return poll;
+//    }
+//
+//    public Vote voteFor(VoteOption option) {
+//        Vote vote = new Vote();
+//        vote.setPublishedAt(Instant.now());
+//        vote.setVoter(this);
+//        vote.setOption(option);
+//        return vote;
+//    }
 
     public String getEmail() {
         return email;
