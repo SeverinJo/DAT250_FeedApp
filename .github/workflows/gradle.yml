@@ -27,5 +27,5 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build
-        run: ./gradlew clean build --no-daemon
+      - name: Build backend
+        run: ./gradlew :backend:clean :backend:build --no-daemon
