@@ -1,7 +1,6 @@
 package no.hvl.FeedApp.entities;
 
 import jakarta.persistence.*;
-import no.hvl.FeedApp.entities.VoteOption;
 //import org.springframework.data.redis.core.RedisHash;
 
 import java.time.Instant;
@@ -21,6 +20,7 @@ public class Poll {
     @ManyToOne
     private User createdBy;
     @OneToMany(mappedBy = "poll", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OrderBy("presentationOrder ASC")
     private List<VoteOption> options = new ArrayList<>();
 
     public Poll() {
