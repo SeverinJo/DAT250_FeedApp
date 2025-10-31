@@ -1,6 +1,7 @@
 package no.hvl.FeedApp.services;
 
 import lombok.RequiredArgsConstructor;
+import no.hvl.FeedApp.dtos.UserDtos;
 import no.hvl.FeedApp.entities.User;
 import no.hvl.FeedApp.repositories.UserRepo;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,9 @@ public class UserService {
 
     private final UserRepo userRepo;
 
-    public User registerUser (User user) {
-        return userRepo.save(user);
+    public UserDtos.View registerUser (UserDtos.Create dto) {
+        User entity = new User(dto.username(), dto.email());
+        return toView(userRepo.save(entity));
     }
 
     public Optional<User> findUserById(Long id) {
@@ -26,12 +28,17 @@ public class UserService {
         return userRepo.findByUsername(username);
     }
 
-    public List<User> findAllUsers() {
-        return userRepo.findAll();
+    public List<UserDtos.View> findAllUsers() {
+        return userRepo.findAll().stream()
+                .map(this::toView)
+                .toList();
     }
 
     public void deleteUser(Long id) {
         userRepo.deleteById(id);
     }
 
+    private UserDtos.View toView(User user) {
+        return new UserDtos.View(user.getUsername(), user.getEmail());
+    }
 }
