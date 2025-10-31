@@ -1,0 +1,1 @@
+rootProject.name = "DAT250_FeedApp"
