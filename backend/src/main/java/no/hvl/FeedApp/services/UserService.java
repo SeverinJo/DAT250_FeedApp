@@ -15,17 +15,19 @@ public class UserService {
 
     private final UserRepo userRepo;
 
+    // Create
     public UserDtos.View registerUser (UserDtos.Create dto) {
         User entity = new User(dto.username(), dto.email());
         return toView(userRepo.save(entity));
     }
 
+    // Read
     public Optional<User> findUserById(Long id) {
         return userRepo.findById(id);
     }
 
-    public User findUserByUsername (String username) {
-        return userRepo.findByUsername(username);
+    public UserDtos.View findUserByUsername (String username) {
+        return toView(userRepo.findByUsername(username));
     }
 
     public List<UserDtos.View> findAllUsers() {
@@ -34,8 +36,16 @@ public class UserService {
                 .toList();
     }
 
-    public void deleteUser(Long id) {
-        userRepo.deleteById(id);
+    // Update
+    public UserDtos.View updateEmail(String username, UserDtos.Update dto) {
+        User user = userRepo.findByUsername(username);
+        user.setEmail(dto.email());
+        return toView(user);
+    }
+
+    // Delete
+    public void deleteUser(String username) {
+        userRepo.deleteByUsername(username);
     }
 
     private UserDtos.View toView(User user) {
