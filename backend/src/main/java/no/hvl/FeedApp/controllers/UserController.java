@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{username}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String username) {
         service.deleteUser(username);
     }

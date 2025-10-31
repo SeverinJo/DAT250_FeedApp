@@ -8,7 +8,6 @@ public class FeedAppApplication {
     //Hello
 	public static void main(String[] args) {
 		SpringApplication.run(FeedAppApplication.class, args);
-        System.out.println("HEI");
 	}
 
 }
