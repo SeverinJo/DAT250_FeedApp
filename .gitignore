@@ -12,7 +12,7 @@ out/
 backend/.gradle/
 backend/build/
 # behold Gradle wrapper i repo
-!gradle/wrapper/gradle-wrapper.jar
+!backend/gradle/wrapper/gradle-wrapper.jar
 
 # --- Java / misc ---
 bin/
