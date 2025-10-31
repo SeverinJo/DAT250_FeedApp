@@ -21,6 +21,7 @@ public class Poll {
     @ManyToOne
     private User createdBy;
     @OneToMany(mappedBy = "poll", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OrderBy("presentationOrder ASC")
     private List<VoteOption> options = new ArrayList<>();
 
     public Poll() {
