@@ -10,6 +10,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,4 +32,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build backend
-        run: ./gradlew :backend:build --no-daemon
+        run: ./gradlew build --no-daemon

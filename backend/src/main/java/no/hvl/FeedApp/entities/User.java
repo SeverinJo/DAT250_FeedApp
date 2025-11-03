@@ -14,6 +14,7 @@ public class User {
     private Long id;
     private String username;
     private String email;
+    private String hashedPassword;
     @OneToMany(mappedBy = "createdBy")
     private Set<Poll> created = new LinkedHashSet<>();
     @OneToMany(mappedBy = "voter")
@@ -67,6 +68,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
     }
 
     public Set<Poll> getCreated() {

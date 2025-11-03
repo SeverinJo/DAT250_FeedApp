@@ -5,7 +5,8 @@ SET search_path TO feed_app;
 CREATE TABLE feed_app.users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL
+    email VARCHAR(255) NOT NULL,
+    hashed_password VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE feed_app.polls (
