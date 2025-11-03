@@ -10,6 +10,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,19 +21,15 @@ jobs:
       # Safety net in case the exec bit is lost
       - name: Ensure gradlew is executable
         run: chmod +x gradlew
-        working-directory: backend
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-        working-directory: backend
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-        working-directory: backend
 
       - name: Build backend
         run: ./gradlew build --no-daemon
-        working-directory: backend
