@@ -1,6 +1,6 @@
 package no.hvl.FeedApp.services;
 
-import no.hvl.FeedApp.repositories.UserRepo;
+import no.hvl.FeedApp.database.repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

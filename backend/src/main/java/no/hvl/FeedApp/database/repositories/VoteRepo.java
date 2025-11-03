@@ -1,6 +1,6 @@
-package no.hvl.FeedApp.repositories;
+package no.hvl.FeedApp.database.repositories;
 
-import no.hvl.FeedApp.entities.Vote;
+import no.hvl.FeedApp.database.entities.Vote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

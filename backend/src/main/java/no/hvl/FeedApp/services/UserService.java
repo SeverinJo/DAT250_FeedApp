@@ -1,9 +1,8 @@
 package no.hvl.FeedApp.services;
 
 import lombok.RequiredArgsConstructor;
-import no.hvl.FeedApp.dtos.UserDtos;
-import no.hvl.FeedApp.entities.User;
-import no.hvl.FeedApp.repositories.UserRepo;
+import no.hvl.FeedApp.database.entities.User;
+import no.hvl.FeedApp.database.repositories.UserRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,39 +15,39 @@ public class UserService {
     private final UserRepo userRepo;
 
     // Create
-    public UserDtos.View registerUser (UserDtos.Create dto) {
-        User entity = new User(dto.username(), dto.email());
-        return toView(userRepo.save(entity));
-    }
+//    public UserDtos.View registerUser (UserDtos.Create dto) {
+//        User entity = new User(dto.username(), dto.email());
+//        return toView(userRepo.save(entity));
+//    }
 
     // Read
-    public Optional<User> findUserById(Long id) {
-        return userRepo.findById(id);
-    }
+//    public Optional<User> findUserById(Long id) {
+//        return userRepo.findById(id);
+//    }
 
-    public UserDtos.View findUserByUsername (String username) {
-        return toView(userRepo.findByUsername(username));
-    }
+//    public UserDtos.View findUserByUsername (String username) {
+//        return toView(userRepo.findByUsername(username));
+//    }
 
-    public List<UserDtos.View> findAllUsers() {
-        return userRepo.findAll().stream()
-                .map(this::toView)
-                .toList();
-    }
+//    public List<UserDtos.View> findAllUsers() {
+//        return userRepo.findAll().stream()
+//                .map(this::toView)
+//                .toList();
+//    }
 
     // Update
-    public UserDtos.View updateEmail(String username, UserDtos.Update dto) {
-        User user = userRepo.findByUsername(username);
-        user.setEmail(dto.email());
-        return toView(user);
-    }
+//    public UserDtos.View updateEmail(String username, UserDtos.Update dto) {
+//        User user = userRepo.findByUsername(username);
+//        user.setEmail(dto.email());
+//        return toView(user);
+//    }
 
     // Delete
     public void deleteUser(String username) {
         userRepo.deleteByUsername(username);
     }
 
-    private UserDtos.View toView(User user) {
-        return new UserDtos.View(user.getUsername(), user.getEmail());
-    }
+//    private UserDtos.View toView(User user) {
+//        return new UserDtos.View(user.getUsername(), user.getEmail());
+//    }
 }

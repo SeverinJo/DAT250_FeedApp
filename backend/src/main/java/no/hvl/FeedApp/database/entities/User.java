@@ -1,4 +1,4 @@
-package no.hvl.FeedApp.entities;
+package no.hvl.FeedApp.database.entities;
 
 import jakarta.persistence.*;
 

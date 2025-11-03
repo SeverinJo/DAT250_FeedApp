@@ -1,7 +1,6 @@
-package no.hvl.FeedApp.repositories;
+package no.hvl.FeedApp.database.repositories;
 
-import no.hvl.FeedApp.entities.Poll;
-import no.hvl.FeedApp.entities.User;
+import no.hvl.FeedApp.database.entities.Poll;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
