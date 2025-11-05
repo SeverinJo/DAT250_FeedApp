@@ -1,7 +1,6 @@
-package no.hvl.FeedApp.entities;
+package no.hvl.FeedApp.database.entities;
 
 import jakarta.persistence.*;
-import no.hvl.FeedApp.entities.VoteOption;
 //import org.springframework.data.redis.core.RedisHash;
 
 import java.time.Instant;

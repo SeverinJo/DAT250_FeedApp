@@ -1,15 +1,13 @@
-package no.hvl.FeedApp.controllers;
+package no.hvl.FeedApp.api.controllers;
 
-import no.hvl.FeedApp.dtos.AuthenticationDtos;
+import no.hvl.FeedApp.api.contract.AuthenticationApiContract;
 import no.hvl.FeedApp.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class AuthenticationController {
+public class AuthenticationController implements AuthenticationApiContract {
 
     private final AuthenticationService authenticationService;
 
@@ -18,10 +16,10 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthenticationDtos.AuthResponse> login(@RequestBody AuthenticationDtos.AuthRequest authRequest) {
+    @Override
+    public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest authRequest) {
         var token = authenticationService.authenticateAndGenerateToken(authRequest.username(), authRequest.password());
-        var response = new AuthenticationDtos.AuthResponse(token, "bearer");
+        var response = new AuthenticationResponse(token, "bearer");
         return ResponseEntity.ok(response);
     }
 
