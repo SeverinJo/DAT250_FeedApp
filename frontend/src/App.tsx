@@ -7,7 +7,7 @@ import {MainPage} from "./pages/MainPage";
 function App() {
 
   // simulate login state
-  const [isAuthenticated] = useState(false);
+  const [isAuthenticated] = useState(true);
 
   return (
     <Routes>

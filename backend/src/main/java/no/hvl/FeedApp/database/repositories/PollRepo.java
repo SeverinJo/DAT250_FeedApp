@@ -20,13 +20,11 @@ public interface PollRepo extends JpaRepository<Poll, Long> {
    @EntityGraph(attributePaths = {"options", "createdBy"})
    Optional<Poll> findById(Long id);
 
-
-    Optional<Poll> findAllByCreatedBy_Id(Long createdById);
-
-
     @EntityGraph(attributePaths = {"options", "createdBy"})
     List<Poll> findAllByOrderByPublishedAtDescIdDesc();
 
-
+    @EntityGraph(attributePaths = {"options", "createdBy"})
     List<Poll> findAllByCreatedBy_IdOrderByPublishedAt(Long id);
+
+
 }
