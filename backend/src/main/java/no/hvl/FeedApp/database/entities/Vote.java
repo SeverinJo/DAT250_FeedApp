@@ -12,14 +12,21 @@ public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Instant publishedAt;
+
+    private Instant votedAt;
+
     @ManyToOne
     private User voter;
+
     @ManyToOne
-    private VoteOption votesOn;
+    private VoteOption voteOption;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Poll poll;
 
     public Vote() {
     }
+
 
     public Long getId() {
         return id;
@@ -29,12 +36,12 @@ public class Vote {
         this.id = id;
     }
 
-    public Instant getPublishedAt() {
-        return publishedAt;
+    public Instant getVotedAt() {
+        return votedAt;
     }
 
-    public void setPublishedAt(Instant publishedAt) {
-        this.publishedAt = publishedAt;
+    public void setVotedAt(Instant publishedAt) {
+        this.votedAt = publishedAt;
     }
 
     public User getVoter() {
@@ -45,11 +52,19 @@ public class Vote {
         this.voter = voter;
     }
 
-    public VoteOption getOption() {
-        return votesOn;
+    public VoteOption getVoteOption() {
+        return voteOption;
     }
 
-    public void setOption(VoteOption option) {
-        this.votesOn = option;
+    public void setVoteOption(VoteOption option) {
+        this.voteOption = option;
+    }
+
+    public Poll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(Poll poll) {
+        this.poll = poll;
     }
 }
