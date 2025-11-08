@@ -7,7 +7,7 @@ import java.time.Instant;
 
 @Entity
 //@RedisHash
-@Table(name="votes")
+@Table(name="votes", schema = "feed_app")
 public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
