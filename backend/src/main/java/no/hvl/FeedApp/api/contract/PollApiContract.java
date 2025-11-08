@@ -4,6 +4,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +22,8 @@ public interface PollApiContract {
     record PollResponse(Long id, String question, List<VoteOptionResponse> voteOptions, String createdBy, ZonedDateTime validUntil) {}
     record VoteOptionResponse(Long id, Integer presentationOrder, String caption, Integer numberOfVotes, Boolean isMyVote) {}
 
-    record PollCreationRequest(String question, List<VoteOptionCreationRequest> voteOptions) {}
-    record VoteOptionCreationRequest(String caption) {}
+    record PollCreationRequest(@NotBlank String question, @NotNull @Size(min=2) List<@Valid VoteOptionCreationRequest> voteOptions) {}
+    record VoteOptionCreationRequest(@NotBlank String caption) {}
 
     @GetMapping
     @ApiResponse(responseCode = "200", description = "Get successful, polls returned")
