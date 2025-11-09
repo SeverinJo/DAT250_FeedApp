@@ -70,4 +70,22 @@ public class PollServiceTest {
         assertThat(dtoResp.voteOptions().getFirst().caption()).isEqualTo("Ja");
     }
 
+    @Test void userVote() {
+        var auth = authentication("Ola");
+
+        var req = new PollCreationRequest("Kan du stemme på denne?",
+                List.of(new VoteOptionCreationRequest("Ja"), new VoteOptionCreationRequest("Nei")));
+        Long pollId = pollService.createPoll(auth, req);
+
+        var poll = pollService.getPoll(auth, pollId);
+        Long voId = poll.voteOptions().getFirst().id();
+        pollService.vote(auth, pollId, voId);
+
+        var pollAfterVoted = pollService.getPoll(auth, pollId);
+
+        assertThat(pollAfterVoted.voteOptions().getFirst().numberOfVotes()).isEqualTo(1);
+        assertThat(pollAfterVoted.voteOptions().getFirst().isMyVote()).isTrue();
+        assertThat(pollAfterVoted.voteOptions().get(1).numberOfVotes()).isEqualTo(0);
+    }
+
 }
