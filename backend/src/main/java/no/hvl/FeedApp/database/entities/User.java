@@ -40,9 +40,9 @@ public class User {
 
     public Vote voteFor(VoteOption option) {
         Vote vote = new Vote();
-        vote.setPublishedAt(Instant.now());
+        vote.setVotedAt(Instant.now());
         vote.setVoter(this);
-        vote.setOption(option);
+        vote.setVoteOption(option);
         return vote;
     }
 

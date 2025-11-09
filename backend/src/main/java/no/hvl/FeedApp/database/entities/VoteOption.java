@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 //@RedisHash
-@Table(name="vote_options")
+@Table(name="vote_options", schema = "feed_app")
 public class VoteOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
