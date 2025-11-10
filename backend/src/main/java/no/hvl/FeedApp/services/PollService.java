@@ -12,6 +12,8 @@ import no.hvl.FeedApp.database.repositories.PollRepo;
 import no.hvl.FeedApp.database.repositories.UserRepo;
 import no.hvl.FeedApp.database.repositories.VoteRepo;
 import no.hvl.FeedApp.messaging.EventPublisher;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,7 @@ public class PollService {
     private final EventPublisher events;
 
 
+
     @Transactional
     public Long createPoll(Authentication auth, PollCreationRequest req) {
         User creator = getUser(auth);
@@ -44,14 +47,14 @@ public class PollService {
         for(int i = 0; i < req.voteOptions().size(); i++) {
             poll.addVoteOption(req.voteOptions().get(i).caption());
         }
+
         Long id = polls.save(poll).getId();
         events.publishPollCreated(poll.getId(), poll.getQuestion());
         return id;
-
     }
 
 
-
+    @Cacheable(cacheNames = "pollDetail", key = "#pollId")
     @Transactional(readOnly = true)
     public PollResponse getPoll(Authentication auth, Long pollId) {
         User user = getUser(auth);
@@ -82,8 +85,7 @@ public class PollService {
     }
 
 
-
-
+    @Cacheable(cacheNames = "pollList", key = "#onlyMyPolls ? 'my:' + #auth.name : 'all'")
     @Transactional(readOnly = true)
     public List<PollResponse> getPolls(Authentication auth, boolean onlyMyPolls) {
         User user = getUser(auth);
@@ -100,7 +102,7 @@ public class PollService {
     }
 
 
-
+    @CacheEvict(cacheNames = {"pollDetail", "pollList"}, allEntries = false, key = "#pollId")
     @Transactional
     public void vote(Authentication auth, Long pollId, Long voteOptionId) {
          User user = getUser(auth);
@@ -210,7 +212,4 @@ public class PollService {
             events.publishVote(pollId, voteOptionId, userId, false);
         }
     }
-
-
-
 }
