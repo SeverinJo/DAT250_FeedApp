@@ -27,8 +27,10 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-jose")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.postgresql:postgresql:42.7.8")
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
 
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
 
     testImplementation("org.testcontainers:junit-jupiter:1.20.2")
     testImplementation("org.testcontainers:postgresql:1.20.2")

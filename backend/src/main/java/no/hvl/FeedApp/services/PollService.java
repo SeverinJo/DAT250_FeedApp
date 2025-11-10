@@ -11,6 +11,7 @@ import no.hvl.FeedApp.database.entities.VoteOption;
 import no.hvl.FeedApp.database.repositories.PollRepo;
 import no.hvl.FeedApp.database.repositories.UserRepo;
 import no.hvl.FeedApp.database.repositories.VoteRepo;
+import no.hvl.FeedApp.messaging.EventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,7 @@ public class PollService {
     private final PollRepo polls;
     private final UserRepo users;
     private final VoteRepo voteRepo;
-
+    private final EventPublisher events;
 
 
     @Transactional
@@ -43,8 +44,9 @@ public class PollService {
         for(int i = 0; i < req.voteOptions().size(); i++) {
             poll.addVoteOption(req.voteOptions().get(i).caption());
         }
-
-       return polls.save(poll).getId();
+        Long id = polls.save(poll).getId();
+        events.publishPollCreated(poll.getId(), poll.getQuestion());
+        return id;
 
     }
 
@@ -130,6 +132,7 @@ public class PollService {
                 userVote.setVoteOption(vo);
                 userVote.setVotedAt(Instant.now());
                 voteRepo.save(userVote);
+                events.publishVote(pollId, voteOptionId, user.getId(), true);
             }
         } else {
             //User has not voted on this poll before
@@ -139,6 +142,7 @@ public class PollService {
             vote.setVoteOption(vo);
             vote.setVotedAt(Instant.now());
             voteRepo.save(vote);
+            events.publishVote(pollId, voteOptionId, user.getId(), false);
         }
     }
 
@@ -149,4 +153,64 @@ public class PollService {
         return users.findByUsername(uname)
                 .orElseThrow(() -> new IllegalArgumentException("User not found!"));
     }
+
+
+    //----------------- Broker methods (needs to avoid authentication) ---------------------
+    public void voteAnonymous(Long pollId, Long voteOptionId, Instant when) {
+        var poll = polls.findById(pollId).orElseThrow(() -> new IllegalArgumentException("No poll with id: " + pollId));
+        if(poll.getValidUntil() != null && Instant.now().isAfter(poll.getValidUntil()))
+            throw new IllegalStateException("Poll is closed, no voting allowed!");
+
+        var vo = poll.getOptions().stream().filter(o -> o.getId().equals(voteOptionId)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Option not in poll!"));
+
+        var v = new Vote();
+        v.setVoter(null);
+        v.setPoll(poll);
+        v.setVoteOption(vo);
+        v.setVotedAt(when != null ? when : Instant.now());
+        voteRepo.save(v);
+
+        events.publishVote(pollId, voteOptionId, null, false);
+    }
+
+
+    public void voteFromBroker(Long userId, Long pollId, Long voteOptionId, Instant when) {
+        if(userId == null) {
+            voteAnonymous(pollId, voteOptionId, when);
+        }
+
+        Poll poll = polls.findById(pollId).orElseThrow(() -> new IllegalArgumentException("No poll with id: " + pollId));
+        if(poll.getValidUntil() != null && Instant.now().isAfter(poll.getValidUntil()))
+            throw new IllegalStateException("Poll is closed, no voting allowed!");
+
+        VoteOption vo = poll.getOptions().stream().filter(o -> o.getId().equals(voteOptionId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("No option with id: " + voteOptionId + " in polls"));
+
+        var maybeVote = voteRepo.findByVoterIdAndPollId(userId, pollId);
+        if(maybeVote.isPresent()) {
+            var vote = maybeVote.get();
+            if(!vote.getVoteOption().getId().equals(voteOptionId)){
+                vote.setVoteOption(vo);
+                vote.setVotedAt(when != null ? when : Instant.now());
+                voteRepo.save(vote);
+                events.publishVote(pollId, voteOptionId, userId, true);
+            } else {
+                //Do nothing
+            }
+        } else {
+
+            User u = users.findById(userId).orElseThrow(() -> new IllegalArgumentException("No user with id: " + userId));
+            Vote v = new Vote();
+            v.setVoter(u);
+            v.setPoll(poll);
+            v.setVoteOption(vo);
+            v.setVotedAt(when != null ? when : Instant.now());
+            voteRepo.save(v);
+            events.publishVote(pollId, voteOptionId, userId, false);
+        }
+    }
+
+
+
 }
