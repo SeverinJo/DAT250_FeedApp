@@ -1,10 +1,13 @@
 import {Box, Button, ListItemIcon, ListItemText, Menu, MenuItem} from "@mui/material";
 import {useState, type SetStateAction} from "react";
 import LogoutIcon from '@mui/icons-material/Logout';
+import {useCurrentUser} from "../../hooks/useCurrentUser.ts";
 
 export function UserMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  const { userInfo } = useCurrentUser();
 
   const handleClick = (event: { currentTarget: SetStateAction<HTMLElement | null>; }) => {
     setAnchorEl(event.currentTarget);
@@ -18,7 +21,7 @@ export function UserMenu() {
   return(
     <Box sx={{ display: 'flex' }}>
       <Button variant={'text'} onClick={handleClick}>
-        username
+        {userInfo?.username || "User"}
       </Button>
 
       <Menu
