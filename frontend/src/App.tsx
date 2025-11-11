@@ -1,13 +1,14 @@
 import {Navigate, Route, Routes} from "react-router-dom";
 import {LoginPage} from "./pages/LoginPage";
-import {useState} from "react";
 import {MainPage} from "./pages/MainPage";
+import {useCurrentUser} from "./hooks/useCurrentUser.ts";
 
 
 function App() {
 
   // simulate login state
-  const [isAuthenticated] = useState(true);
+  //const [isAuthenticated] = useState(true);
+  const { isAuthenticated } = useCurrentUser();
 
   return (
     <Routes>
