@@ -49,7 +49,7 @@ public class PollService {
         }
 
         Long id = polls.save(poll).getId();
-        events.publishPollCreated(poll.getId(), poll.getQuestion());
+        events.publishPollCreated(id, poll.getQuestion());
         return id;
     }
 

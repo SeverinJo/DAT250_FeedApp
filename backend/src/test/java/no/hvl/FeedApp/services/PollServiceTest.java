@@ -5,12 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import no.hvl.FeedApp.api.contract.PollApiContract.*;
 import no.hvl.FeedApp.database.entities.User;
 import no.hvl.FeedApp.database.repositories.UserRepo;
+import no.hvl.FeedApp.messaging.EventPublisher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
@@ -25,11 +32,24 @@ import static org.mockito.Mockito.when;
  * To run this test locally Docker Desktop must be running in background. In GitHub Actions docker is available by default.
  */
 
-
+@Testcontainers
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
 public class PollServiceTest {
+
+    @Container
+    static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine");
+
+    @DynamicPropertySource
+    static void datasourceProps(DynamicPropertyRegistry r) {
+        r.add("spring.datasource.url", pg::getJdbcUrl);
+        r.add("spring.datasource.username", pg::getUsername);
+        r.add("spring.datasource.password", pg::getPassword);
+    }
+
+    @MockitoBean
+    EventPublisher events;
 
     @Autowired
     PollService pollService;
