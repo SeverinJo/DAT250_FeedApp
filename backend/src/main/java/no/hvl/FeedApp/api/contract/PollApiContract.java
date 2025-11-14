@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -24,6 +25,9 @@ public interface PollApiContract {
 
     record PollCreationRequest(@NotBlank String question, @NotNull @Size(min=2) List<@Valid VoteOptionCreationRequest> voteOptions) {}
     record VoteOptionCreationRequest(@NotBlank String caption) {}
+
+    record PollStaticData(Long id, String question, List<VoteOptionStatic> options, String createdBy, Instant validUntil) {}
+    record VoteOptionStatic(Long id, Integer presentationOrder, String caption, Integer numberOfVotes) {}
 
     @GetMapping
     @ApiResponse(responseCode = "200", description = "Get successful, polls returned")

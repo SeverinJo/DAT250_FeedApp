@@ -2,15 +2,23 @@ import {Box, Button, Container, Divider, Paper, TextField, Typography} from "@mu
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import {Logo} from "../../components/Logo";
+import {useLogin} from "../../hooks/useLogin.ts";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const [usernameValue, setUsernameValue] = useState("");
+  const [passwordValue, setPasswordValue] = useState("");
   const [errorState, setErrorState] = useState(false);
+  const { login } = useLogin();
 
-  const handleLogin = (e: { preventDefault: () => void; }) => {
+  const handleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    setErrorState(true);
-    // todo
+    const success = await login({username: usernameValue, password: passwordValue});
+    if(!success) {
+        setErrorState(true);
+        return;
+    }
+    navigate("/");
   }
 
   return (
@@ -34,8 +42,19 @@ export function LoginPage() {
       >
         <Logo />
         <Divider />
-        <TextField label={'Username'} error={ errorState } onChange={() => setErrorState(false)}/>
-        <TextField label={'Password'} type={'password'} error={ errorState } onChange={() => setErrorState(false)}/>
+        <TextField
+            label={'Username'}
+            value={usernameValue}
+            error={ errorState }
+            onChange={(e) => { setUsernameValue(e.target.value); setErrorState(false) }}
+        />
+        <TextField
+            label={'Password'}
+            type={'password'}
+            value={passwordValue}
+            error={ errorState }
+            onChange={(e) => { setPasswordValue(e.target.value); setErrorState(false) }}
+        />
 
         <Button
           type={"submit"}

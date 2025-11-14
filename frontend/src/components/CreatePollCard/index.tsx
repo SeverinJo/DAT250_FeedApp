@@ -1,5 +1,7 @@
 import {Box, Button, Paper, TextField, Typography} from "@mui/material";
 import {useState} from "react";
+import {useCreatePoll} from "../../hooks/useCreatePoll.ts";
+import type {VoteOptionCreationRequest} from "../../api/generated";
 
 
 export default function CreatePollCard() {
@@ -7,6 +9,8 @@ export default function CreatePollCard() {
   const [options, setOptions] = useState(["", ""])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const { createPoll } = useCreatePoll();
 
   const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options]
@@ -16,11 +20,33 @@ export default function CreatePollCard() {
 
   const addOption = () => setOptions([...options, ""])
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(true);
     setError(null);
 
-    // TODO: create poll dto, create some poll creation api method
+    try {
+      const pollRequest = {
+        question,
+        voteOptions: options
+            .filter(opt => opt.trim() !== "")
+            .map((opt): VoteOptionCreationRequest => ({ caption: opt }))
+      };
+
+      const success = await createPoll(pollRequest);
+
+      if (success) {
+        setQuestion("");
+        setOptions(["", ""]);
+        console.log("Poll created successfully!");
+      } else {
+        setError("Failed to create poll.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("An error occurred while creating the poll.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return(

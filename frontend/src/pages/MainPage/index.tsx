@@ -8,12 +8,15 @@ import PollOutlinedIcon from '@mui/icons-material/PollOutlined';
 import {a11yProps, CustomTabPanel} from "../../components/CustomTabPanel";
 import CreatePollCard from "../../components/CreatePollCard";
 import VotePollCard from "../../components/VotePollCard";
-
+import {usePolls} from "../../hooks/usePolls.ts";
 
 
 export function MainPage(){
 
   const [tabValue, setTabValue] = useState(0);
+
+  const {polls: allPolls, isLoading: isLoadingAllPolls} = usePolls(false);
+  const {polls: myPolls, isLoading: isLoadingMyPolls} = usePolls(true);
 
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -43,23 +46,27 @@ export function MainPage(){
           <Tab icon={<AddchartIcon />} label="Create Poll" {...a11yProps(2)}/>
         </Tabs>
 
-        {/*TODO: check if list of polls for this user is empty. if empty display "no polls found", if polls list them in readonly mode*/}
         <CustomTabPanel value={tabValue} index={0}>
-          <Box sx={{display: 'flex', width: '100%', justifyContent: 'center'}}>
-            <VotePollCard></VotePollCard>
+          <Box sx={{display: 'flex', width: '100%', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap'}}>
+            {/*todo: show something else when loading*/}
+            {myPolls?.map((poll) => (
+                <VotePollCard key={poll.id} poll={poll}/>
+            ))}
           </Box>
         </CustomTabPanel>
 
-        {/*TODO: display list of all polls, paginated*/}
         <CustomTabPanel value={tabValue} index={1}>
-          <Box sx={{display: 'flex', width: '100%', justifyContent: 'center'}}>
-            <span>Item Two</span>
+          <Box sx={{display: 'flex', width: '100%', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap'}}>
+            {/*todo: show something else when loading*/}
+            {allPolls?.map((poll) => (
+                <VotePollCard key={poll.id} poll={poll} />
+            ))}
           </Box>
         </CustomTabPanel>
 
         <CustomTabPanel value={tabValue} index={2}>
           <Box sx={{display: 'flex', width: '100%', justifyContent: 'center'}}>
-            <CreatePollCard></CreatePollCard>
+            <CreatePollCard/>
           </Box>
         </CustomTabPanel>
       </Box>
