@@ -1,17 +1,23 @@
-import {Navigate, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {LoginPage} from "./pages/LoginPage";
 import {MainPage} from "./pages/MainPage";
-import {useCurrentUser} from "./hooks/useCurrentUser.ts";
+//import {useCurrentUser} from "./hooks/useCurrentUser.ts";
+import {useState} from "react";
 
 
 function App() {
 
   // simulate login state
   //const [isAuthenticated] = useState(true);
-  const { isAuthenticated } = useCurrentUser();
+  //const { isAuthenticated } = useCurrentUser();
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem('accessToken')
+  );
 
   return (
     <Routes>
+        <Route path="/login" element={<LoginPage onLogin={() => setIsAuthenticated(true)} />} />
+
       {isAuthenticated ? (
         <>
           <Route path={'/'} element={ <MainPage /> } />
@@ -19,7 +25,6 @@ function App() {
         </>
       ) : (
         <>
-          <Route path={'/login'} element={<LoginPage/>} />
           <Route path={'*'} element={<Navigate to={'/login'} />} />
         </>
       )};

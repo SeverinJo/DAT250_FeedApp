@@ -4,7 +4,11 @@ import {useState} from "react";
 import {Logo} from "../../components/Logo";
 import {useLogin} from "../../hooks/useLogin.ts";
 
-export function LoginPage() {
+interface LoginPageProps {
+    onLogin: () => void;
+}
+
+export function LoginPage({ onLogin }:LoginPageProps) {
   const navigate = useNavigate();
   const [usernameValue, setUsernameValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
@@ -18,6 +22,7 @@ export function LoginPage() {
         setErrorState(true);
         return;
     }
+    onLogin();
     navigate("/");
   }
 

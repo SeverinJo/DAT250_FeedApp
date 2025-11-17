@@ -15,8 +15,8 @@ export function MainPage(){
 
   const [tabValue, setTabValue] = useState(0);
 
-  const {polls: allPolls, isLoading: isLoadingAllPolls} = usePolls(false);
-  const {polls: myPolls, isLoading: isLoadingMyPolls} = usePolls(true);
+  const {polls: allPolls, isLoading: _isLoadingAllPolls} = usePolls(false);
+  const {polls: myPolls, isLoading: _isLoadingMyPolls} = usePolls(true);
 
   const handleChange = (_event: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);

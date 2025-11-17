@@ -1,23 +1,37 @@
 services:
-
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile   # keep your existing backend Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - redis
       - db
+      - rabbitmq
+    environment:
+      # optionally override logging level, e.g.
+      - SPRING_PROFILES_ACTIVE=dev
+    volumes:
+      - ./backend/src:/home/gradle/app/src   # optional: mount source for live code changes
+      - ./backend/build/libs:/home/gradle/app/build/libs  # if you want to inspect jars
+    command: ["./gradlew", "bootRun"]  # run in dev mode (live reload) instead of built jar
 
-#  frontend:
-#    build:
-#      context: ./frontend
-#      dockerfile: Dockerfile
-#    ports:
-#      - "3000:3000"
-#    depends_on:
-#      - backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app        # mount host source
+      - /app/node_modules      # *important* to prevent host node_modules interfering
+    environment:
+      - VITE_BACKEND_URL=http://backend:8080  # or host.docker.internal if needed
+    command: ["npm", "run", "dev"]
+    depends_on:
+      - backend
+
 
   redis:
     image: redis:latest
@@ -26,18 +40,18 @@ services:
 
   db:
     image: postgres:latest
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: feedapp_user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: feed_app_db
+    ports:
+      - "5432:5432"
 
   rabbitmq:
     image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
