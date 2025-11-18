@@ -1,4 +1,4 @@
-import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import {LoginPage} from "./pages/LoginPage";
 import {MainPage} from "./pages/MainPage";
 //import {useCurrentUser} from "./hooks/useCurrentUser.ts";
