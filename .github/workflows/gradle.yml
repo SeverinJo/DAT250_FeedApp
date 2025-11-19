@@ -2,34 +2,77 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Safety net in case the exec bit is lost
-      - name: Ensure gradlew is executable
-        run: chmod +x gradlew
+      # Set up Docker Compose (optional but good)
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
+      # Start services defined in docker-compose.yml (Redis, PostgreSQL, RabbitMQ, backend, maybe frontend)
+      - name: Start services with Docker Compose
+        run: |
+          docker compose up -d
+        # you may specify `services:` or `compose-file:` if your compose file is not in root
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+      # Wait for dependent services to be healthy (you may need extra steps)
+      - name: Wait for services to be ready
+        run: |
+          # example wait loop; adjust as needed
+          docker compose exec -T db bash -c "until pg_isready ; do sleep 1 ; done"
+          docker compose exec -T redis bash -c "until redis-cli ping >/dev/null ; do sleep 1 ; done"
+          docker compose exec -T rabbitmq bash -c "until rabbitmqctl status >/dev/null 2>&1 ; do sleep 1 ; done"
 
-      - name: Build backend
-        run: ./gradlew build --no-daemon
+      # Build backend
+      - name: Build backend (Gradle)
+        working-directory: ./backend
+        run: |
+          chmod +x gradlew
+          ./gradlew clean bootJar --no-daemon
+
+      # Build backend Docker image
+      - name: Build backend Docker image
+        working-directory: ./backend
+        run: |
+          docker build \
+            --file Dockerfile \
+            --tag my-org/feedapp-backend:${{ github.sha }} \
+            .
+
+      # Build frontend
+      - name: Build frontend (Node)
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
+
+      # Build frontend Docker image (or dev image)
+      - name: Build frontend Docker image
+        working-directory: ./frontend
+        run: |
+          docker build \
+            --file Dockerfile.dev \
+            --tag my-org/feedapp-frontend:${{ github.sha }} \
+            .
+
+      # (Optional) Run integration tests against the stack
+      - name: Run integration tests
+        working-directory: ./backend
+        run: |
+          # Your command to execute backend tests that depend on DB/Redis/Rabbit
+          ./gradlew testIntegration
+
+      # Cleanup services
+      - name: Tear down Docker Compose services
+        run: |
+          docker compose down
