@@ -41,13 +41,8 @@ jobs:
       - name: Spin up full stack
         run: |
           docker compose up -d
-          # maybe wait a few seconds for readiness
           sleep 10
           docker ps
-
-      # (Optional) Check logs or basic test to show it works
-      - name: Check backend logs
-        run: docker logs $(docker ps -qf "name=backend")
 
       # Tear down
       - name: Tear down stack
