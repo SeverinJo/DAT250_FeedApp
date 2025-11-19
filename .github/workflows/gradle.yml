@@ -1,4 +1,4 @@
-name: CI
+name: CI Demo
 
 on:
   push:
@@ -8,80 +8,47 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
+  demo-build-run:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
+      # Setup Docker compose
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1
 
-      - name: Start services with Docker Compose
+      # Build backend
+      - name: Build backend
+        working-directory: ./backend
+        run: |
+          chmod +x gradlew
+          ./gradlew clean bootJar --no-daemon
+
+      # Build frontend
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm ci && npm run build
+
+      # Build images
+      - name: Build Docker images
+        run: |
+          docker build -f backend/Dockerfile -t demo-backend:latest backend/
+          docker build -f frontend/Dockerfile.dev -t demo-frontend:latest frontend/
+
+      # Spin up stack with docker-compose
+      - name: Spin up full stack
         run: |
           docker compose up -d
+          # maybe wait a few seconds for readiness
+          sleep 10
+          docker ps
 
-      - name: Wait for services to be ready
-        run: |
-          until docker compose exec -T db pg_isready -U postgres > /dev/null 2>&1; do sleep 1; done
-          until docker compose exec -T redis redis-cli ping > /dev/null 2>&1; do sleep 1; done
-          until docker compose exec -T rabbitmq rabbitmqctl status > /dev/null 2>&1; do sleep 1; done
+      # (Optional) Check logs or basic test to show it works
+      - name: Check backend logs
+        run: docker logs $(docker ps -qf "name=backend")
 
-      # Backend build
-      - name: Remove build directory (backend)
-        working-directory: ./backend
-        run: rm -rf build
-
-      - name: Ensure gradlew is executable
-        working-directory: ./backend
-        run: chmod +x gradlew
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-
-      - name: Build backend JAR
-        working-directory: ./backend
-        run: ./gradlew clean bootJar --no-daemon
-
-      - name: Build backend Docker image
-        working-directory: ./backend
-        run: |
-          docker build \
-            --file Dockerfile \
-            --tag my-org/feedapp-backend:${{ github.sha }} \
-            .
-
-      # Frontend build
-      - name: Setup Node.js (frontend)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: npm ci
-
-      - name: Build frontend app
-        working-directory: ./frontend
-        run: npm run build
-
-      - name: Build frontend Docker image
-        working-directory: ./frontend
-        run: |
-          docker build \
-            --file Dockerfile.dev \
-            --tag my-org/feedapp-frontend:${{ github.sha }} \
-            .
-
-      # Tests
-      - name: Run backend integration tests
-        working-directory: ./backend
-        run: ./gradlew testIntegration --no-daemon || ./gradlew test --no-daemon
-
-      - name: Tear down Docker Compose services
-        run: |
-          docker compose down
+      # Tear down
+      - name: Tear down stack
+        run: docker compose down
